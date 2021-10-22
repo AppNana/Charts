@@ -197,10 +197,7 @@ open class ChartDataSet: ChartBaseDataSet
     open override func entriesForXValue(_ xValue: Double) -> [ChartDataEntry]
     {
         let match: (ChartDataEntry) -> Bool = { $0.x == xValue }
-        var partitioned = self.entries
-        let i = partitioned.partition(by: match)
-        guard i < partitioned.endIndex else { return [] }
-        return partitioned[i...].prefix(while: match)
+        return filter(match)
     }
     
     /// - Parameters:
@@ -215,7 +212,11 @@ open class ChartDataSet: ChartBaseDataSet
         rounding: ChartDataSetRounding) -> Int
     {
         var closest = partitioningIndex { $0.x >= xValue }
-        guard closest < endIndex else { return -1 }
+        //
+//        guard closest < endIndex else { return -1 }
+        if closest >= endIndex {
+            closest = index(before: endIndex)
+        }
 
         let closestXValue = self[closest].x
 
